@@ -1,8 +1,9 @@
 import { Typography, Box, Divider } from "@mui/material";
+import { observer } from 'mobx-react-lite'
 import React from "react";
 import { useStoreContext } from '../Context';
 import { StorageItem } from "./DataInput";
-import ResultItem from "./ResultItem";
+import { ResultItem } from "./ResultItem";
 import axios from "axios";
 import ResultHeader from "./ResultHeader";
 
@@ -14,27 +15,28 @@ type Currency = {
   "exchangedate": string
 }
 
-export default function Result() {
-  const {storage, setStorage} = useStoreContext();
+export const Result = observer(() => {
+  const {store} = useStoreContext();
+  const storage = store.months;
+
   const [exchangeRates, setExchangeRates] = React.useState<Currency[]>([]);
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json');
-        setExchangeRates(response.data.filter((currency: Currency) => currency.cc === "EUR" || currency.cc === "USD"));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json');
+      setExchangeRates(response.data.filter((currency: Currency) => currency.cc === "EUR" || currency.cc === "USD"));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   const calculateAccumulation = () => {
     const totalProfit = storage.reduce((acc: number, item: StorageItem) => acc + Number(item.profit), 0);
     const totalLoss = storage.reduce((acc: number, item: StorageItem) => acc + Number(item.loss), 0);
-    console.log(totalLoss, totalProfit)
     return totalProfit - totalLoss;
   }
 
@@ -165,4 +167,4 @@ export default function Result() {
 
     </Box>
   </Box>
-}
+})

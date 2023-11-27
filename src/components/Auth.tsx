@@ -2,19 +2,22 @@ import { Box, Typography } from "@mui/material";
 import { CustomButton, CustomTextField } from "./CustomMUIComponents";
 import React from "react";
 import { useStoreContext } from "../Context";
+import { observer } from "mobx-react-lite";
 
 
-
-export default function Auth() {
-  const { setIsAuthorized} = useStoreContext();
+export const Auth = observer(() => {
+  const { store } = useStoreContext();
   const [login, setLogin] = React.useState("");
   const [password, setPassword] = React.useState("");
-
+ 
+  
 
   const handleClick = () => {
     if(login === "testLogin22" && password === "s#dDA23@44#Ds") {
-      setIsAuthorized(true)
-    }
+      console.log(store.authorized, store.isAuthorized)
+      store.authorize();
+      console.log(store.authorized, store.isAuthorized)
+    } 
     else alert("Невірний логін або пароль.")
   }
 
@@ -51,4 +54,4 @@ export default function Auth() {
         </CustomButton>
       </Box>
   </Box>
-}
+})

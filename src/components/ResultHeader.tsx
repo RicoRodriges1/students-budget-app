@@ -1,6 +1,5 @@
-import { Box, Dialog, DialogContent, DialogTitle, Divider, Typography } from "@mui/material";
-import { AmountInput } from "./AmountInput";
-import { CustomButton } from "./CustomMUIComponents";
+import { Box, Typography } from "@mui/material";
+
 
 
 export default function ResultHeader() {

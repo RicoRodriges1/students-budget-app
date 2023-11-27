@@ -4,21 +4,30 @@ import { Typography, Dialog, DialogTitle, Divider, DialogContent, Box, Button } 
 import { CustomButton } from "./CustomMUIComponents";
 import { AmountInput } from "./AmountInput";
 import { useStoreContext } from "../Context";
+import { observer } from "mobx-react-lite";
 
 type ResultItemProps = {
   item: StorageItem,
   index: number
 }
 
-export default function ResultItem(props: ResultItemProps) {
+export const ResultItem = observer((props: ResultItemProps) => {
   const {item, index} = props;
 
-  const {storage, setStorage} = useStoreContext();
+  const {store} = useStoreContext();
+  const storage = store.months;
+
+  console.log(JSON.stringify(item))
 
   const [open, setOpen] = React.useState(false);
   const [profit, setProfit] = React.useState(item.profit);
   const [loss, setLoss] = React.useState(item.loss);
   const [date] = React.useState(item.date);
+
+  React.useEffect(() => {
+    setProfit(item.profit);
+    setLoss(item.loss);
+  },[item])
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -29,14 +38,12 @@ export default function ResultItem(props: ResultItemProps) {
   };
 
   const handleDelete = () => {
-    setStorage(storage.filter((item: StorageItem) => item.date !== date));
+    store.setMonths(storage.filter((item: StorageItem) => item.date !== date));
     handleClose();
   }
 
   const handleSave = () => {
-    setStorage((prevItems: StorageItem[]) => 
-      prevItems.map((item) => (item.date === date ? { date: date, profit: profit, loss: loss} : item))
-    );
+    store.setMonths(storage.map((item: StorageItem) => (item.date === date ? { date: date, profit: profit, loss: loss} : item)));
     handleClose();
   }
 
@@ -87,4 +94,4 @@ export default function ResultItem(props: ResultItemProps) {
         </DialogContent>
       </Dialog>
   </>
-}
+})

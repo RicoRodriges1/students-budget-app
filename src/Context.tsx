@@ -1,4 +1,6 @@
 import { createContext, useContext, useState } from "react";
+import RootStore from "./models/months"
+import { observer } from "mobx-react-lite";
 
 export interface IProviderProps {
   children: React.ReactNode
@@ -13,13 +15,21 @@ export function useStoreContext() {
   return context;
 }
 
-export function StoreContextProvider(props: IProviderProps) {
+export const StoreContextProvider = observer((props: IProviderProps) => {
   const [storage, setStorage] = useState([]);
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const store = RootStore.create({
+    authorized: false,
+    months: [{
+      date: "11/2023",
+      profit: "100",
+      loss: "20"
+    }]
+  })
+  
 
   
 
-  return <StoreContext.Provider value={{storage, setStorage, isAuthorized, setIsAuthorized}}>
+  return <StoreContext.Provider value={{storage, setStorage, store}}>
     {props.children}
   </StoreContext.Provider>
-}
+})

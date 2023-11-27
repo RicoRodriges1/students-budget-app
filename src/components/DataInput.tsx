@@ -7,6 +7,7 @@ import { AmountInput } from './AmountInput';
 import { Box, Dialog, Divider, Typography } from '@mui/material';
 import { CustomButton } from './CustomMUIComponents';
 import { useStoreContext } from '../Context';
+import {observer} from 'mobx-react-lite'
 
 export type StorageItem = {
   date: string,
@@ -14,8 +15,10 @@ export type StorageItem = {
   loss: string
 }
 
-export default function DataInput() {
-  const {storage, setStorage} = useStoreContext();
+export const DataInput = observer(() => {
+  const {store} = useStoreContext();
+  const storage = store.Months;
+  
 
   const [date, setDate] = React.useState<dayjs.Dayjs | null>(dayjs());
   const [profit, setProfit] = React.useState("");
@@ -27,15 +30,15 @@ export default function DataInput() {
   const [other, setOther] = React.useState("");
 
 
+
   const handleSave = () => {
     if(profit || loss) {
+      console.log(storage, store.Months)
       const inStorage = storage.find((item: StorageItem) => item.date === date!.format('MM/YYYY'))
       if(inStorage) {
-        setStorage((prevItems: StorageItem[]) => 
-          prevItems.map((item) => (item.date === date!.format('MM/YYYY') ? { date: item.date, profit: profit, loss: loss} : item))
-        );
+        store.setMonths(storage.map((item: StorageItem) => (item.date === date!.format('MM/YYYY') ? { date: item.date, profit: profit, loss: loss} : item)));
       } else {
-        setStorage([...storage, {date: date!.format('MM/YYYY'), profit: profit, loss: loss}])
+        store.setMonths([...storage, {date: date!.format('MM/YYYY'), profit: profit, loss: loss}])
       }
     } else alert("Введіть дохід або витрати")
   }
@@ -208,5 +211,5 @@ export default function DataInput() {
       </Box>
     </Box>
   </Box>
-}
+})
 
